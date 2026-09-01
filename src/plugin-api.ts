@@ -70,13 +70,13 @@ export interface PluginContributions {
 }
 
 /**
- * A small always-visible control in the navigation panel header, beside the machine
- * switcher. Meant for plugin-owned state that is not scoped to one workspace and so has
- * nowhere else to live: a context switch, a global indicator. Anything workspace-scoped
- * belongs in a workspace panel or label instead.
+ * A small always-visible control in the navigation panel header, on its own row under the
+ * app name and machine switcher. Meant for plugin-owned state that is not scoped to one
+ * workspace and so has nowhere else to live: a context switch, a global indicator.
+ * Anything workspace-scoped belongs in a workspace panel or label instead.
  *
- * Keep it inline and compact: the header is a single row shared with the app's own
- * controls, and it is the same row in the mobile layout.
+ * Keep it inline and compact: the panel can be as narrow as ~210px, and in the mobile
+ * layout the items share a scrolling row with the context chips.
  */
 export interface HeaderItemContribution {
   id: LocalContributionId;

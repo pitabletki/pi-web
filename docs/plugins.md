@@ -898,11 +898,11 @@ Use existing classes such as `toolbar`, `viewer`, `empty`, and `muted` for panel
 
 ### Header items
 
-Header items are small always-visible controls in the navigation panel header, beside the machine switcher. In the mobile layout, where that header is hidden, the same items appear in the context bar.
+Header items are small always-visible controls in the navigation panel header, on their own row under the app name and machine switcher. In the mobile layout, where that header is hidden, the same items appear in the context bar.
 
 Use them for plugin-owned state that is not scoped to one workspace and therefore has nowhere else to live: a context switch, a global indicator. Anything workspace-scoped belongs in a workspace panel or label instead.
 
-Keep the rendered control inline and compact. The header is a single row shared with the app's own controls, and it is the same row on mobile.
+Keep the rendered control inline and compact. The panel can be as narrow as ~210px, and on mobile the items share a scrolling row with the context chips.
 
 ```js
 headerItems: [
