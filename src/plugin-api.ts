@@ -62,10 +62,29 @@ export interface PluginActivationResult {
 
 export interface PluginContributions {
   actions?: PluginAction[];
+  headerItems?: HeaderItemContribution[];
   workspacePanels?: WorkspacePanelContribution[];
   workspaceLabels?: WorkspaceLabelContribution[];
   themes?: ThemeContribution[];
   themePairs?: ThemePairContribution[];
+}
+
+/**
+ * A small always-visible control in the navigation panel header, beside the machine
+ * switcher. Meant for plugin-owned state that is not scoped to one workspace and so has
+ * nowhere else to live: a context switch, a global indicator. Anything workspace-scoped
+ * belongs in a workspace panel or label instead.
+ *
+ * Keep it inline and compact: the header is a single row shared with the app's own
+ * controls, and it is the same row in the mobile layout.
+ */
+export interface HeaderItemContribution {
+  id: LocalContributionId;
+  /** Accessible name for the item's region. Not rendered as visible text. */
+  title: string;
+  order?: number;
+  visible?: (context: PluginRuntimeContext) => boolean;
+  render: (context: PluginRuntimeContext) => TemplateResult;
 }
 
 export interface PluginMachine {

@@ -2,6 +2,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import type { Machine, Project, SessionInfo, Workspace } from "../../api";
 import { shortSessionId } from "../../sessionLabels";
+import type { HeaderItem } from "../../plugins/types";
 import type { NavigationSection } from "../../appShell/navigationState";
 
 @customElement("app-context-bar")
@@ -11,6 +12,7 @@ export class AppContextBar extends LitElement {
   @property({ attribute: false }) project?: Project;
   @property({ attribute: false }) workspace?: Workspace;
   @property({ attribute: false }) session?: SessionInfo;
+  @property({ attribute: false }) headerItems: readonly HeaderItem[] = [];
   @property({ attribute: false }) refreshControl: unknown;
   @property({ attribute: false }) onOpenSection?: (section: NavigationSection) => void;
   @property({ attribute: false }) onShowActions?: () => void;
@@ -47,6 +49,11 @@ export class AppContextBar extends LitElement {
       <nav class=${this.contextBarClass()} aria-label="Current location">
         <span class="context-bar-label">Location</span>
         <ol class="context-items" @scroll=${this.onContextScroll}>
+          ${this.headerItems.map((item) => html`
+            <li class="context-item">
+              <div class="context-plugin-item" role="group" aria-label=${item.title}>${item.render()}</div>
+            </li>
+          `)}
           ${showMachineContext ? html`
             <li class="context-item">
               <button type="button" class=${this.machine === undefined ? "context-chip empty" : "context-chip"} title=${machineContextTitle(this.machine)} aria-label=${`Machine: ${machineLabel}. Open machine selection.`} @click=${() => { this.onOpenSection?.("machines"); }}>
@@ -147,6 +154,7 @@ export class AppContextBar extends LitElement {
     .context-bar.has-context-actions .context-items { padding-right: 58px; scroll-padding-inline: 8px 58px; }
     .context-bar.has-context-actions-double .context-items { padding-right: 102px; scroll-padding-inline: 8px 102px; }
     .context-item { flex: 0 0 auto; min-width: 0; display: flex; }
+    .context-plugin-item { display: flex; align-items: center; min-width: 0; }
     .context-actions { position: absolute; top: 6px; right: 0; bottom: 6px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 0 8px; background: var(--pi-bg); pointer-events: none; }
     .context-actions::before { content: ""; position: absolute; top: 0; bottom: 0; left: -24px; z-index: 0; width: 24px; background: linear-gradient(90deg, transparent, var(--pi-bg)); pointer-events: none; }
     app-refresh-control, .context-action-button { position: relative; z-index: 1; pointer-events: auto; }

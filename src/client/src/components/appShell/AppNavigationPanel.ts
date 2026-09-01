@@ -2,7 +2,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import type { Machine, MachineHealth, Project, SessionActivity, SessionInfo, SessionStatus, Workspace } from "../../api";
 import type { MachineStatusSnapshot } from "../../../../shared/machineStatus";
-import type { WorkspaceLabelItem } from "../../plugins/types";
+import type { HeaderItem, WorkspaceLabelItem } from "../../plugins/types";
 import { selectedMachineId } from "../../controllers/types";
 import type { NavigationSection } from "../../appShell/navigationState";
 import { NAVIGATION_SECTION_ORDER } from "../../appShell/navigationState";
@@ -36,6 +36,7 @@ export class AppNavigationPanel extends LitElement {
   @property({ attribute: false }) refreshControl: unknown;
   @property({ type: Boolean, reflect: true }) collapsible = false;
   @property({ type: Boolean, reflect: true }) compact = false;
+  @property({ attribute: false }) headerItems: readonly HeaderItem[] = [];
   @property({ type: Boolean }) machinesCollapsed = false;
   @property({ type: Boolean }) projectsCollapsed = false;
   @property({ type: Boolean }) workspacesCollapsed = false;
@@ -103,6 +104,11 @@ export class AppNavigationPanel extends LitElement {
             .onCancelKeyboardNavigation=${() => { this.cancelKeyboardNavigation(); }}
           ></machine-switcher>
         ` : null}
+        ${this.headerItems.length === 0 ? null : html`
+          <div class="header-items">
+            ${this.headerItems.map((item) => html`<div class="header-item" role="group" aria-label=${item.title}>${item.render()}</div>`)}
+          </div>
+        `}
         <div class="header-actions">
           ${this.refreshControl}
           <button title="Show Actions" aria-label="Show Actions" @click=${() => { this.onShowActions?.(); }}>Actions</button>
@@ -221,6 +227,7 @@ export class AppNavigationPanel extends LitElement {
     header strong { flex: 0 0 auto; }
     machine-switcher { flex: 1 1 auto; min-width: 0; }
     :host([compact]) header { display: none; }
+    .header-items { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; min-width: 0; }
     .header-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
     /* Expanded sections share the panel height equally, so collapsing one
        section distributes its space to every remaining section, not just the
