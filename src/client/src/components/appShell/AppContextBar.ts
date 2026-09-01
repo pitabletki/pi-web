@@ -2,6 +2,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import type { Machine, Project, SessionInfo, Workspace } from "../../api";
 import { shortSessionId } from "../../sessionLabels";
+import { providerNavigation } from "../../plugins/providerNavigation";
 import type { NavigationSection } from "../../appShell/navigationState";
 
 @customElement("app-context-bar")
@@ -55,12 +56,14 @@ export class AppContextBar extends LitElement {
               </button>
             </li>
           ` : null}
-          <li class="context-item">
-            <button type="button" class=${this.project === undefined ? "context-chip empty" : "context-chip"} title=${projectContextTitle(this.project)} aria-label=${`Project: ${projectLabel}. Open project selection.`} @click=${() => { this.onOpenSection?.("projects"); }}>
-              <span class="context-kind">Project</span>
-              <span class="context-value">${projectLabel}</span>
-            </button>
-          </li>
+          ${providerNavigation(this.workspace).hideProjects ? null : html`
+            <li class="context-item">
+              <button type="button" class=${this.project === undefined ? "context-chip empty" : "context-chip"} title=${projectContextTitle(this.project)} aria-label=${`Project: ${projectLabel}. Open project selection.`} @click=${() => { this.onOpenSection?.("projects"); }}>
+                <span class="context-kind">Project</span>
+                <span class="context-value">${projectLabel}</span>
+              </button>
+            </li>
+          `}
           <li class="context-item">
             <button type="button" class=${this.workspace === undefined ? "context-chip empty" : "context-chip"} title=${workspaceContextTitle(this.workspace)} aria-label=${`Workspace: ${workspaceLabel}. Open workspace selection.`} @click=${() => { this.onOpenSection?.("workspaces"); }}>
               <span class="context-kind">Workspace</span>
