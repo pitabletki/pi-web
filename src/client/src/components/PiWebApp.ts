@@ -1217,6 +1217,7 @@ export class PiWebApp extends LitElement {
         .canStartSession=${!!this.state.selectedWorkspace}
         .collapsible=${true}
         .compact=${this.appShell.isMobileNavigationLayout}
+        .headerItems=${this.plugins.getHeaderItems(this.createPluginRuntimeContext())}
         .projectsCollapsed=${this.navigationSections.isCollapsed("projects")}
         .workspacesCollapsed=${this.navigationSections.isCollapsed("workspaces")}
         .sessionsCollapsed=${this.navigationSections.isCollapsed("sessions")}
@@ -2082,6 +2083,7 @@ export class PiWebApp extends LitElement {
         .project=${this.state.selectedProject}
         .workspace=${this.state.selectedWorkspace}
         .session=${this.state.selectedSession}
+        .headerItems=${this.plugins.getHeaderItems(this.createPluginRuntimeContext())}
         .refreshControl=${this.appShell.shouldShowAppRefreshInContextBar() ? this.renderAppRefresh() : undefined}
         .onOpenSection=${(section: NavigationSection) => { this.openNavigationSection(section); }}
         .onShowActions=${() => { this.setState({ actionPaletteOpen: true }); }}
