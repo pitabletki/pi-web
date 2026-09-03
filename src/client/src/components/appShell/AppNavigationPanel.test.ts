@@ -9,10 +9,12 @@ import { MachineList } from "../MachineList";
 import { MachineSwitcher } from "../MachineSwitcher";
 import { ProjectList } from "../ProjectList";
 import { WorkspaceList } from "../WorkspaceList";
+import { setLocale } from "../../i18n";
 import { AppNavigationPanel, shouldShowMachinesSection } from "./AppNavigationPanel";
 
 afterEach(() => {
   document.body.replaceChildren();
+  setLocale(undefined);
 });
 
 describe("shouldShowMachinesSection", () => {
@@ -61,6 +63,30 @@ describe("provider-owned navigation", () => {
 
     expect(panel.shadowRoot?.querySelector("project-list")).not.toBeNull();
     expect(section(panel, "workspace-list", WorkspaceList).sectionTitle).toBeUndefined();
+  });
+});
+
+describe("locale", () => {
+  it("renders section headings from the catalog and back in English", async () => {
+    setLocale("ru");
+    const panel = await mountPanel({}, machine("local"));
+    const projects = section(panel, "project-list", ProjectList);
+
+    for (const collapsible of [true, false]) {
+      projects.collapsible = collapsible;
+      await projects.updateComplete;
+      expect(projects.shadowRoot?.textContent ?? "", (collapsible ? "складная" : "простая")).toContain("Проекты");
+    }
+
+    setLocale("en");
+    for (const collapsible of [true, false]) {
+      projects.collapsible = collapsible;
+      projects.requestUpdate();
+      await projects.updateComplete;
+      const english = projects.shadowRoot?.textContent ?? "";
+      expect(english, (collapsible ? "складная" : "простая")).toContain("Projects");
+      expect(english, (collapsible ? "складная" : "простая")).not.toContain("Проекты");
+    }
   });
 });
 

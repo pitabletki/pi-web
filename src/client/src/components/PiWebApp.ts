@@ -76,6 +76,7 @@ import "./appShell/AppRefreshControl";
 import { errorBanner } from "./errorBanner";
 import { deprecatedAgentInputsBanner, deprecatedAgentInputsWarnings } from "./deprecatedAgentInputsBanner";
 import { appStyles } from "./shared";
+import { t } from "../i18n";
 
 
 const PI_WEB_STATUS_REFRESH_MS = 15 * 60 * 1000;
@@ -1385,7 +1386,7 @@ export class PiWebApp extends LitElement {
     const project = this.state.selectedProject;
     if (this.state.isLoadingProjects) {
       return {
-        title: "Loading projects…",
+        title: t("Loading projects…"),
         body: "Looking for projects you have added to PI WEB.",
       };
     }
@@ -1396,8 +1397,8 @@ export class PiWebApp extends LitElement {
             body: "Use Actions → Add Project to add a folder. Workspace tools will appear here after you choose a workspace.",
           }
         : {
-            title: "Select a project",
-            body: "Choose a project from the sidebar, then select a workspace to use its tools.",
+            title: t("Select a project"),
+            body: t("Choose a project from the sidebar, then select a workspace to use its tools."),
           };
     }
     if (this.state.isLoadingWorkspaces) {
@@ -1419,11 +1420,11 @@ export class PiWebApp extends LitElement {
   }
 
   private sessionEmptyMessage(): string {
-    if (this.state.isLoadingProjects) return "Loading projects…";
-    if (this.state.selectedWorkspace !== undefined) return "Select or start a session.";
-    if (this.state.selectedProject !== undefined) return "Select a workspace to start a session.";
-    if (this.state.projects.length === 0) return "Add a project to start a session.";
-    return "Select a project and workspace to start a session.";
+    if (this.state.isLoadingProjects) return t("Loading projects…");
+    if (this.state.selectedWorkspace !== undefined) return t("Select or start a session.");
+    if (this.state.selectedProject !== undefined) return t("Select a workspace to start a session.");
+    if (this.state.projects.length === 0) return t("Add a project to start a session.");
+    return t("Select a project and workspace to start a session.");
   }
 
   private mobilePanelBadge(panel: QualifiedWorkspacePanelContribution): unknown {

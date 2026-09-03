@@ -5,6 +5,7 @@ import { shortSessionId } from "../../sessionLabels";
 import type { HeaderItem } from "../../plugins/types";
 import { providerNavigation } from "../../plugins/providerNavigation";
 import type { NavigationSection } from "../../appShell/navigationState";
+import { t } from "../../i18n";
 
 @customElement("app-context-bar")
 export class AppContextBar extends LitElement {
@@ -47,8 +48,8 @@ export class AppContextBar extends LitElement {
     const workspaceLabel = workspaceContextLabel(this.workspace);
     const sessionLabel = sessionContextLabel(this.session);
     return html`
-      <nav class=${this.contextBarClass()} aria-label="Current location">
-        <span class="context-bar-label">Location</span>
+      <nav class=${this.contextBarClass()} aria-label=${t("Current location")}>
+        <span class="context-bar-label">${t("Location")}</span>
         <ol class="context-items" @scroll=${this.onContextScroll}>
           ${this.headerItems.map((item) => html`
             <li class="context-item">
@@ -58,7 +59,7 @@ export class AppContextBar extends LitElement {
           ${showMachineContext ? html`
             <li class="context-item">
               <button type="button" class=${this.machine === undefined ? "context-chip empty" : "context-chip"} title=${machineContextTitle(this.machine)} aria-label=${`Machine: ${machineLabel}. Open machine selection.`} @click=${() => { this.onOpenSection?.("machines"); }}>
-                <span class="context-kind">Machine</span>
+                <span class="context-kind">${t("Machine")}</span>
                 <span class="context-value">${machineLabel}</span>
               </button>
             </li>
@@ -66,20 +67,20 @@ export class AppContextBar extends LitElement {
           ${providerNavigation(this.workspace).hideProjects ? null : html`
             <li class="context-item">
               <button type="button" class=${this.project === undefined ? "context-chip empty" : "context-chip"} title=${projectContextTitle(this.project)} aria-label=${`Project: ${projectLabel}. Open project selection.`} @click=${() => { this.onOpenSection?.("projects"); }}>
-                <span class="context-kind">Project</span>
+                <span class="context-kind">${t("Project")}</span>
                 <span class="context-value">${projectLabel}</span>
               </button>
             </li>
           `}
           <li class="context-item">
             <button type="button" class=${this.workspace === undefined ? "context-chip empty" : "context-chip"} title=${workspaceContextTitle(this.workspace)} aria-label=${`Workspace: ${workspaceLabel}. Open workspace selection.`} @click=${() => { this.onOpenSection?.("workspaces"); }}>
-              <span class="context-kind">Workspace</span>
+              <span class="context-kind">${t("Workspace")}</span>
               <span class="context-value">${workspaceLabel}</span>
             </button>
           </li>
           <li class="context-item">
             <button type="button" class=${this.session === undefined ? "context-chip empty" : "context-chip"} title=${sessionContextTitle(this.session)} aria-label=${`Session: ${sessionLabel}. Open session selection.`} @click=${() => { this.onOpenSection?.("sessions"); }}>
-              <span class="context-kind">Session</span>
+              <span class="context-kind">${t("Session")}</span>
               <span class="context-value">${sessionLabel}</span>
             </button>
           </li>
@@ -92,7 +93,7 @@ export class AppContextBar extends LitElement {
   private renderActionsButton() {
     if (this.onShowActions === undefined) return null;
     return html`
-      <button type="button" class="context-action-button" title="Show Actions" aria-label="Show Actions" @click=${(event: MouseEvent) => { event.stopPropagation(); this.onShowActions?.(); }}>
+      <button type="button" class="context-action-button" title=${t("Show Actions")} aria-label=${t("Show Actions")} @click=${(event: MouseEvent) => { event.stopPropagation(); this.onShowActions?.(); }}>
         <svg class="context-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path d="M13 2 4 14h7l-1 8 10-13h-7V2Z"></path>
         </svg>
