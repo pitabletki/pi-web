@@ -1202,7 +1202,7 @@ export class PiWebApp extends LitElement {
         .onToggleMachines=${() => { this.navigationSections.toggle("machines"); }}
         .onSelectMachine=${(machine: Machine) => this.selectNavigationItem("machines", "projects", () => this.selectMachineWithMemory(machine))}
         .onRemoveMachine=${(machine: Machine) => { void this.removeMachine(machine); }}
-        .projects=${this.state.projects}
+        .projects=${this.listedProjects()}
         .selectedProject=${this.state.selectedProject}
         .workspaces=${this.state.workspaces}
         .selectedWorkspace=${this.state.selectedWorkspace}
@@ -1264,6 +1264,16 @@ export class PiWebApp extends LitElement {
     if (project === undefined) return false;
     await this.selectNavigationItem("projects", "workspaces", () => this.workspaces.selectProject(project, { workspaceId: options?.workspaceId }));
     return true;
+  }
+
+  /* Проекты, которые показывает панель. Плагин может попросить не показывать свои — но
+     выбранный проект остаётся в списке всегда: то, в чём человек сейчас работает, не
+     должно исчезать из навигации. */
+  private listedProjects(): Project[] {
+    const hidden = this.plugins.getHiddenProjectIds(this.createPluginRuntimeContext());
+    if (hidden.size === 0) return this.state.projects;
+    const selectedId = this.state.selectedProject?.id;
+    return this.state.projects.filter((project) => !hidden.has(project.id) || project.id === selectedId);
   }
 
   private async selectNavigationItem(section: NavigationSection, nextTarget: NavigationFocusTarget, action: () => Promise<void>): Promise<void> {

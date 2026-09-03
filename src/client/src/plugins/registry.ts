@@ -1,6 +1,6 @@
 import { html, svg } from "lit";
 import { requirePluginBackendRevision } from "../../../shared/pluginBackendProtocol";
-import type { HeaderItem, HeaderItemContribution, PiWebPluginRegistration, PluginAction, PluginRuntimeContext, QualifiedContributionId, QualifiedHeaderItemContribution, QualifiedPluginAction, QualifiedThemeContribution, QualifiedThemePairContribution, QualifiedWorkspaceLabelContribution, QualifiedWorkspacePanelContribution, ThemeContribution, ThemePairContribution, WorkspaceLabelContext, WorkspaceLabelContribution, WorkspaceLabelItem, WorkspacePanelContext, WorkspacePanelContribution, WorkspacePluginBinding } from "./types";
+import type { HeaderItem, HeaderItemContribution, HiddenProjectsContribution, PiWebPluginRegistration, PluginAction, PluginRuntimeContext, QualifiedContributionId, QualifiedHeaderItemContribution, QualifiedHiddenProjectsContribution, QualifiedPluginAction, QualifiedThemeContribution, QualifiedThemePairContribution, QualifiedWorkspaceLabelContribution, QualifiedWorkspacePanelContribution, ThemeContribution, ThemePairContribution, WorkspaceLabelContext, WorkspaceLabelContribution, WorkspaceLabelItem, WorkspacePanelContext, WorkspacePanelContribution, WorkspacePluginBinding } from "./types";
 
 const idPattern = /^[a-z][a-z0-9.-]*$/u;
 const localIdPattern = /^[a-z][a-z0-9.-]*$/u;
@@ -21,6 +21,7 @@ type RegisteredPluginAction = Omit<PluginAction, "id"> & {
 export class PluginRegistry {
   private readonly actions: RegisteredPluginAction[] = [];
   private readonly headerItems: QualifiedHeaderItemContribution[] = [];
+  private readonly hiddenProjects: QualifiedHiddenProjectsContribution[] = [];
   private readonly workspacePanels: QualifiedWorkspacePanelContribution[] = [];
   private readonly workspaceLabels: QualifiedWorkspaceLabelContribution[] = [];
   private readonly themes: QualifiedThemeContribution[] = [];
@@ -59,6 +60,7 @@ export class PluginRegistry {
       const workspacePanels = (contributions.workspacePanels ?? []).map((panel) => this.qualifyWorkspacePanel(runtimePluginId, panel, registration.machineId, registration.sourcePluginId, backendRevision, contributionIds));
       const workspaceLabels = (contributions.workspaceLabels ?? []).map((contribution) => this.qualifyWorkspaceLabelContribution(runtimePluginId, contribution, registration.machineId, registration.sourcePluginId, backendRevision, contributionIds));
       const headerItems = (contributions.headerItems ?? []).map((contribution) => this.qualifyHeaderItem(runtimePluginId, contribution, registration.machineId, registration.sourcePluginId, contributionIds));
+      const hiddenProjects = (contributions.hiddenProjects ?? []).map((contribution) => this.qualifyHiddenProjects(runtimePluginId, contribution, registration.machineId, registration.sourcePluginId, contributionIds));
       const themes = registration.machineId === undefined
         ? (contributions.themes ?? []).map((theme) => this.qualifyTheme(runtimePluginId, theme, contributionIds))
         : [];
@@ -70,6 +72,7 @@ export class PluginRegistry {
       for (const contributionId of contributionIds) this.contributionIds.add(contributionId);
       this.actions.push(...actions);
       this.headerItems.push(...headerItems);
+      this.hiddenProjects.push(...hiddenProjects);
       this.workspacePanels.push(...workspacePanels);
       this.workspaceLabels.push(...workspaceLabels);
       this.themes.push(...themes);
@@ -127,6 +130,26 @@ export class PluginRegistry {
         if (item.visible?.(scopedContext) === false) return [];
         return [{ id: item.id, title: item.title, render: () => item.render(scopedContext) }];
       });
+  }
+
+  /** Project ids plugins asked to leave out of the project list. */
+  getHiddenProjectIds(context: PluginRuntimeContext): Set<string> {
+    const selectedMachineId = runtimeContextMachineId(context);
+    const hidden = new Set<string>();
+    for (const contribution of this.hiddenProjects) {
+      if (!this.isContributionActive(contribution.pluginId, contribution.machineId, selectedMachineId, contribution.sourcePluginId)) continue;
+      const scopedContext = pluginRuntimeContextFor(context, contribution.pluginId);
+      let ids: readonly string[];
+      try {
+        ids = contribution.projects(scopedContext);
+      } catch (error) {
+        // Плагин не должен уметь спрятать список проектов целиком, уронив рендер панели.
+        console.warn(`Failed to read hidden projects from PI WEB plugin ${contribution.id}`, error);
+        continue;
+      }
+      for (const id of ids) if (typeof id === "string" && id !== "") hidden.add(id);
+    }
+    return hidden;
   }
 
   getWorkspacePanels(): QualifiedWorkspacePanelContribution[] {
@@ -229,6 +252,24 @@ export class PluginRegistry {
     sourcePluginId: string | undefined,
     contributionIds: Set<QualifiedContributionId>,
   ): QualifiedHeaderItemContribution {
+    const id = this.qualify(pluginId, contribution.id, contributionIds);
+    return {
+      ...contribution,
+      id,
+      pluginId,
+      localId: contribution.id,
+      ...(machineId === undefined ? {} : { machineId }),
+      ...(sourcePluginId === undefined ? {} : { sourcePluginId }),
+    };
+  }
+
+  private qualifyHiddenProjects(
+    pluginId: string,
+    contribution: HiddenProjectsContribution,
+    machineId: string | undefined,
+    sourcePluginId: string | undefined,
+    contributionIds: Set<QualifiedContributionId>,
+  ): QualifiedHiddenProjectsContribution {
     const id = this.qualify(pluginId, contribution.id, contributionIds);
     return {
       ...contribution,

@@ -680,6 +680,7 @@ The workspace-related contribution arrays returned by `activate()` are:
 interface PluginContributions {
   actions?: PluginAction[];
   headerItems?: HeaderItemContribution[];
+  hiddenProjects?: HiddenProjectsContribution[];
   workspacePanels?: WorkspacePanelContribution[];
   workspaceLabels?: WorkspaceLabelContribution[];
 }
@@ -948,6 +949,28 @@ Notes:
 - `render` receives the same runtime context actions get, scoped to the contributing plugin, and runs on every app render, so keep it cheap and free of side effects.
 - Items are ordered by `order` (default 1000), then by qualified id.
 - Rendering a custom element keeps plugin styles inside its own shadow root instead of inheriting the header's.
+
+### Hidden projects
+
+A plugin can ask the project section to leave some projects out:
+
+```js
+hiddenProjects: [
+  { id: "roots", projects: () => ["project-id-1", "project-id-2"] },
+]
+```
+
+Use it for a provider whose projects are one implied context each and that already offers its own way in. A row in the project list is then a second door into a place the plugin navigates to itself, on a panel where space is scarce.
+
+The host cannot work this out alone: it learns a project's provider only after resolving that project's workspaces, and it does that lazily for the selected project. A plugin that navigates between such projects has usually resolved them already.
+
+Notes:
+
+- The bargain is explicit — hiding a project means the plugin takes responsibility for offering the way in.
+- The **selected** project is always listed, so what you are working in never disappears from navigation.
+- `projects()` runs on every render: return a cached list, do not fetch.
+- A `projects()` that throws is logged and skipped; other plugins' hidden lists still apply.
+- Hidden projects stay reachable by URL and by adding them again, so nothing becomes permanently unreachable.
 
 ### Workspace labels
 
