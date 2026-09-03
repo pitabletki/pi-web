@@ -911,7 +911,7 @@ Use existing classes such as `toolbar`, `viewer`, `empty`, and `muted` for panel
 
 ### Header items
 
-Header items are small always-visible controls in the navigation panel header, on their own row under the app name and machine switcher. In the mobile layout, where that header is hidden, the same items appear in the context bar.
+Header items are small always-visible controls in the navigation panel header, each on its own row under the app name and machine switcher. In the mobile layout, where that header is hidden, the same items appear in the context bar.
 
 Use them for plugin-owned state that is not scoped to one workspace and therefore has nowhere else to live: a context switch, a global indicator. Anything workspace-scoped belongs in a workspace panel or label instead.
 

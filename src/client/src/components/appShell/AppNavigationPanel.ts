@@ -237,8 +237,14 @@ export class AppNavigationPanel extends LitElement {
        min-width: 0, so an item beside it squeezes the switcher to nothing. They render
        after the actions row for the same reason wrap order matters — put them before it
        and the Actions button wraps onto a third row. Both seen on a live stand, not
-       theorised. */
-    .header-items { flex: 1 1 100%; display: flex; align-items: center; gap: 8px; min-width: 0; }
+       theorised.
+
+       And one row per item, not one row for all of them: two items sharing a 316px row
+       left the second one wrapping inside itself (measured live: it needed 224px and got
+       158px). The host cannot know how wide a contributed control is, so it stops
+       guessing and gives each its own line. */
+    .header-items { flex: 1 1 100%; display: flex; flex-direction: column; align-items: stretch; gap: 8px; min-width: 0; }
+    .header-item { display: flex; align-items: center; min-width: 0; }
     .header-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
     /* Expanded sections share the panel height equally, so collapsing one
        section distributes its space to every remaining section, not just the
