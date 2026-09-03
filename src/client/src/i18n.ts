@@ -98,3 +98,21 @@ export function setLocale(value: Locale | undefined): void {
 export function t(text: string): string {
   return CATALOGS[locale()][text] ?? text;
 }
+
+/**
+ * Publish the resolved locale as `<html lang>`.
+ *
+ * Correct HTML in its own right — assistive technology reads it — and it doubles as the
+ * one place anything else can learn the language without repeating how it was decided.
+ * Plugins render into the same document, and a rule copied into each of them is a rule
+ * that eventually disagrees with this one.
+ */
+export function publishLocaleToDocument(): void {
+  const documentRef: unknown = Reflect.get(globalThis, "document");
+  if (typeof documentRef !== "object" || documentRef === null) return;
+  const root: unknown = Reflect.get(documentRef, "documentElement");
+  if (typeof root !== "object" || root === null) return;
+  const setAttribute: unknown = Reflect.get(root, "setAttribute");
+  if (typeof setAttribute !== "function") return;
+  Reflect.apply(setAttribute, root, ["lang", locale()]);
+}

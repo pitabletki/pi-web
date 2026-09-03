@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, it } from "vitest";
-import { LOCALE_STORAGE_KEY, resolveLocale, setLocale, t } from "./i18n";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { LOCALE_STORAGE_KEY, publishLocaleToDocument, resolveLocale, setLocale, t } from "./i18n";
 
 afterEach(() => {
   setLocale(undefined);
+  vi.unstubAllGlobals();
 });
 
 describe("resolveLocale", () => {
@@ -25,6 +26,26 @@ describe("resolveLocale", () => {
 
   it("names the storage key it reads, so a switcher can write the same one", () => {
     expect(LOCALE_STORAGE_KEY).toBe("pi-web.locale");
+  });
+});
+
+describe("publishLocaleToDocument", () => {
+  it("writes the resolved locale to <html lang> so plugins need no copy of the rule", () => {
+    const attributes: [string, string][] = [];
+    const documentStub = { documentElement: { setAttribute: (name: string, value: string) => { attributes.push([name, value]); } } };
+    vi.stubGlobal("document", documentStub);
+    setLocale("ru");
+
+    publishLocaleToDocument();
+
+    expect(attributes).toEqual([["lang", "ru"]]);
+  });
+
+  it("says nothing when there is no document", () => {
+    vi.stubGlobal("document", undefined);
+    setLocale("ru");
+
+    expect(() => { publishLocaleToDocument(); }).not.toThrow();
   });
 });
 
