@@ -17,6 +17,24 @@ Pi package settings are separate from PI WEB config. They live in Pi's package-m
 
 If you installed services with a custom config path, rerun `pi-web install --config /path/to/config.json` after changing that path or after upgrading from a version that only applied the custom path to the web service. This regenerates service files so the web/API and session daemon use the same `PI_WEB_CONFIG`.
 
+## Interface language
+
+The shell frame — section headings, the actions button, the context bar, the empty states
+— follows the **browser language**: a Russian browser gets Russian, everything else gets
+English. A reader can pin a language for their browser instead:
+
+```js
+localStorage.setItem("pi-web.locale", "ru"); // or "en"
+```
+
+The change applies on the next page load. This is browser-local on purpose: it is a
+reading preference, not machine state, and two people using the same stand can want
+different languages.
+
+Anything not in a catalogue stays English rather than showing a key, so a partly
+translated build is readable rather than broken. Catalogues live in
+`src/client/src/i18n.ts`; adding a language is adding a catalogue.
+
 ## Reverse-proxy deployment paths
 
 The deployment path is not a PI WEB config-file key or environment setting. The published client is portable: one build works at `/` and at canonical trailing-slash prefixes such as `/ai/` or `/test/ai/`.

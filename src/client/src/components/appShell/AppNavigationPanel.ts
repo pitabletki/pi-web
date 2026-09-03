@@ -12,6 +12,7 @@ import "../MachineSwitcher";
 import "../ProjectList";
 import "../WorkspaceList";
 import "../SessionList";
+import { t } from "../../i18n";
 
 export type NavigationFocusTarget = NavigationSection | "chat";
 
@@ -105,7 +106,7 @@ export class AppNavigationPanel extends LitElement {
         ` : null}
         <div class="header-actions">
           ${this.refreshControl}
-          <button title="Show Actions" aria-label="Show Actions" @click=${() => { this.onShowActions?.(); }}>Actions</button>
+          <button title=${t("Show Actions")} aria-label=${t("Show Actions")} @click=${() => { this.onShowActions?.(); }}>${t("Actions")}</button>
         </div>
       </header>
       ${this.compact && shouldShowMachinesSection(this.machines) ? html`
