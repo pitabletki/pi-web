@@ -1,5 +1,6 @@
 import { html, svg } from "lit";
 import { requirePluginBackendRevision } from "../../../shared/pluginBackendProtocol";
+import { t } from "../i18n";
 import type { HeaderItem, HeaderItemContribution, HiddenProjectsContribution, PiWebPluginRegistration, PluginAction, PluginRuntimeContext, QualifiedContributionId, QualifiedHeaderItemContribution, QualifiedHiddenProjectsContribution, QualifiedPluginAction, QualifiedThemeContribution, QualifiedThemePairContribution, QualifiedWorkspaceLabelContribution, QualifiedWorkspacePanelContribution, ThemeContribution, ThemePairContribution, WorkspaceLabelContext, WorkspaceLabelContribution, WorkspaceLabelItem, WorkspacePanelContext, WorkspacePanelContribution, WorkspacePluginBinding } from "./types";
 
 const idPattern = /^[a-z][a-z0-9.-]*$/u;
@@ -107,15 +108,19 @@ export class PluginRegistry {
         pluginId: action.pluginId,
         localId: action.localId,
         ...(action.machineId === undefined ? {} : { machineId: action.machineId }),
-        title: action.title,
+        // Перевод здесь, а не у каждого объявления действия: действия приходят из ядра,
+        // из встроенных плагинов и из наших — одна точка накрывает все три, и ни один
+        // список действий не приходится трогать. Незнакомая строка проходит как есть,
+        // поэтому плагин со своими русскими подписями остаётся при них.
+        title: t(action.title),
         run: () => action.run(scopedContext),
       };
-      if (action.description !== undefined) qualified.description = action.description;
+      if (action.description !== undefined) qualified.description = t(action.description);
       if (action.shortcut !== undefined) qualified.shortcut = action.shortcut;
       if (action.shortcutAliases !== undefined) qualified.shortcutAliases = [...action.shortcutAliases];
-      if (action.group !== undefined) qualified.group = action.group;
+      if (action.group !== undefined) qualified.group = t(action.group);
       if (enabled !== undefined) qualified.enabled = enabled;
-      if (disabledReason !== undefined && disabledReason !== "") qualified.disabledReason = disabledReason;
+      if (disabledReason !== undefined && disabledReason !== "") qualified.disabledReason = t(disabledReason);
       return qualified;
     });
   }

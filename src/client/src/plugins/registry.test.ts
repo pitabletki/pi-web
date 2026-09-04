@@ -2,6 +2,7 @@ import { html } from "lit";
 import { describe, expect, it, vi } from "vitest";
 import type { DeleteWorkspaceFileResponse, FileContentResponse, FileTreeResponse, JsonValue, MoveWorkspaceFileResponse, SessionInfo, SessionStatus, WriteWorkspaceFileResponse, Workspace } from "../api";
 import { initialAppState, type AppState } from "../appState";
+import { setLocale } from "../i18n";
 import { markCachedNewSessionInfo } from "../cachedNewSessions";
 import { machineScopedPluginId } from "../../../shared/machinePluginIds";
 import { corePlugin } from "./core";
@@ -66,6 +67,34 @@ describe("PluginRegistry", () => {
 
     expect(registry.getActions(createContext().context).some((action) => action.id === "core:actions.show")).toBe(true);
     expect(registry.getWorkspacePanels().map((panel) => panel.id)).toEqual(["core:workspace.files", "core:workspace.terminal"]);
+  });
+
+  it("hands the palette translated action text, wherever the action was declared", () => {
+    const registry = new PluginRegistry();
+    registry.register({ id: "core", plugin: corePlugin });
+    setLocale("ru");
+
+    const shown = registry.getActions(createContext().context).find((action) => action.id === "core:actions.show");
+
+    expect(shown?.title).toBe("Показать действия");
+    expect(shown?.description).toBe("Открыть палитру команд");
+    expect(shown?.group).toBe("Общее");
+    setLocale(undefined);
+  });
+
+  it("passes text nobody translated through untouched, so a plugin keeps its own wording", () => {
+    const registry = new PluginRegistry();
+    registry.register({
+      id: "modes",
+      plugin: { apiVersion: 2, name: "Режимы", activate: () => ({ contributions: { actions: [{ id: "go.chat", title: "Режим: Чат", group: "Режимы", run: () => undefined }] } }) },
+    });
+    setLocale("ru");
+
+    const action = registry.getActions(createContext().context)[0];
+
+    expect(action?.title).toBe("Режим: Чат");
+    expect(action?.group).toBe("Режимы");
+    setLocale(undefined);
   });
 
   it("rejects legacy browser plugins with an attributed API-version error", () => {
