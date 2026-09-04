@@ -76,7 +76,7 @@ import "./appShell/AppRefreshControl";
 import { errorBanner } from "./errorBanner";
 import { deprecatedAgentInputsBanner, deprecatedAgentInputsWarnings } from "./deprecatedAgentInputsBanner";
 import { appStyles } from "./shared";
-import { publishLocaleToDocument, t } from "../i18n";
+import { localizeAction, publishLocaleToDocument, t } from "../i18n";
 
 
 const PI_WEB_STATUS_REFRESH_MS = 15 * 60 * 1000;
@@ -1517,7 +1517,11 @@ export class PiWebApp extends LitElement {
   }
 
   private getDefaultActions(): AppAction[] {
-    return [...this.plugins.getActions(this.createPluginRuntimeContext()), ...this.workspaceSurfaceActions(), ...this.sessionActions(), ...this.navigationFocusActions(), ...this.panelLayoutActions()];
+    // Действия реестра переведены на его шве; собственные действия оболочки проходят через
+    // ту же функцию здесь. Без этого палитра показывала половину списка по-русски, а
+    // половину по-английски — «Перейти к чату» рядом с «Focus Sessions».
+    const own = [...this.workspaceSurfaceActions(), ...this.sessionActions(), ...this.navigationFocusActions(), ...this.panelLayoutActions()];
+    return [...this.plugins.getActions(this.createPluginRuntimeContext()), ...own.map((action) => localizeAction(action))];
   }
 
   private workspaceSurfaceActions(): AppAction[] {
