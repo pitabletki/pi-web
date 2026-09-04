@@ -46,14 +46,14 @@ export class AppContextBar extends LitElement {
     const workspaceLabel = workspaceContextLabel(this.workspace);
     const sessionLabel = sessionContextLabel(this.session);
     return html`
+      ${this.headerItems.length === 0 ? null : html`
+        <div class="context-plugin-row">
+          ${this.headerItems.map((item) => html`<div class="context-plugin-item" role="group" aria-label=${item.title}>${item.render()}</div>`)}
+        </div>
+      `}
       <nav class=${this.contextBarClass()} aria-label="Current location">
         <span class="context-bar-label">Location</span>
         <ol class="context-items" @scroll=${this.onContextScroll}>
-          ${this.headerItems.map((item) => html`
-            <li class="context-item">
-              <div class="context-plugin-item" role="group" aria-label=${item.title}>${item.render()}</div>
-            </li>
-          `)}
           ${showMachineContext ? html`
             <li class="context-item">
               <button type="button" class=${this.machine === undefined ? "context-chip empty" : "context-chip"} title=${machineContextTitle(this.machine)} aria-label=${`Machine: ${machineLabel}. Open machine selection.`} @click=${() => { this.onOpenSection?.("machines"); }}>
@@ -154,6 +154,10 @@ export class AppContextBar extends LitElement {
     .context-bar.has-context-actions .context-items { padding-right: 58px; scroll-padding-inline: 8px 58px; }
     .context-bar.has-context-actions-double .context-items { padding-right: 102px; scroll-padding-inline: 8px 102px; }
     .context-item { flex: 0 0 auto; min-width: 0; display: flex; }
+    /* Plugin items get a row of their own above the location chips. Sharing the scrolling
+       chip row put a 150px mode switch and a 224px toolbar ahead of the chips, which left
+       "where am I" entirely off-screen at 375px. Wrapping keeps every item reachable. */
+    .context-plugin-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 6px 8px 0; background: var(--pi-bg); }
     .context-plugin-item { display: flex; align-items: center; min-width: 0; }
     .context-actions { position: absolute; top: 6px; right: 0; bottom: 6px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 0 8px; background: var(--pi-bg); pointer-events: none; }
     .context-actions::before { content: ""; position: absolute; top: 0; bottom: 0; left: -24px; z-index: 0; width: 24px; background: linear-gradient(90deg, transparent, var(--pi-bg)); pointer-events: none; }
