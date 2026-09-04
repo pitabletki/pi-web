@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { LOCALE_STORAGE_KEY, publishLocaleToDocument, resolveLocale, setLocale, t } from "./i18n";
+import { LOCALE_STORAGE_KEY, publishLocaleToDocument, resolveLocale, setLocale, t, tPlural } from "./i18n";
 
 afterEach(() => {
   setLocale(undefined);
@@ -65,5 +65,47 @@ describe("t", () => {
     setLocale("en");
     expect(t("Projects")).toBe("Projects");
     expect(t("Anything at all")).toBe("Anything at all");
+  });
+});
+
+describe("tPlural", () => {
+  it("agrees with the Russian numeral, which two forms cannot do", () => {
+    setLocale("ru");
+    expect(tPlural(1, "message")).toBe("1 сообщение");
+    expect(tPlural(2, "message")).toBe("2 сообщения");
+    expect(tPlural(5, "message")).toBe("5 сообщений");
+    expect(tPlural(0, "message")).toBe("0 сообщений");
+  });
+
+  it("keeps agreeing past the teens, where the rule stops being 'last digit'", () => {
+    setLocale("ru");
+    expect(tPlural(11, "message")).toBe("11 сообщений");
+    expect(tPlural(14, "message")).toBe("14 сообщений");
+    expect(tPlural(21, "message")).toBe("21 сообщение");
+    expect(tPlural(22, "message")).toBe("22 сообщения");
+    expect(tPlural(112, "message")).toBe("112 сообщений");
+  });
+
+  it("pluralizes English too, so the helper is not a Russian-only detour", () => {
+    setLocale("en");
+    expect(tPlural(1, "message")).toBe("1 message");
+    expect(tPlural(2, "message")).toBe("2 messages");
+    expect(tPlural(0, "message")).toBe("0 messages");
+  });
+
+  it("degrades to the English rule for a noun nobody translated yet", () => {
+    setLocale("ru");
+    expect(tPlural(3, "widget")).toBe("3 widgets");
+  });
+});
+
+describe("the shell frame catalog", () => {
+  it("covers the empty states a phone shows before anything is picked", () => {
+    setLocale("ru");
+    expect(t("No project")).toBe("Проект не выбран");
+    expect(t("No workspace selected")).toBe("Воркспейс не выбран");
+    expect(t("No session selected")).toBe("Сессия не выбрана");
+    expect(t("Archived")).toBe("Архив");
+    expect(t("Workspace actions and details")).toBe("Действия и сведения о воркспейсе");
   });
 });

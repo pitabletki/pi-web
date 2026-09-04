@@ -46,6 +46,36 @@ const RU: Record<string, string> = {
     "Выбери проект и воркспейс, чтобы начать сессию.",
   "Loading projects…": "Загружаю проекты…",
   "Select or start a session.": "Выбери сессию или начни новую.",
+  // Свёрнутая секция и строка контекста, когда ничего не выбрано. На телефоне это
+  // первое, что видно, и до правки оно единственным островом оставалось английским.
+  "No machine": "Машина не выбрана",
+  "No project": "Проект не выбран",
+  "No workspace": "Воркспейс не выбран",
+  "No session": "Сессия не выбрана",
+  "No machine selected": "Машина не выбрана",
+  "No project selected": "Проект не выбран",
+  "No workspace selected": "Воркспейс не выбран",
+  "No session selected": "Сессия не выбрана",
+  // Список сессий
+  "Archived": "Архив",
+  // Кнопки режима выбора («Archive», «Mark read», «Select visible») намеренно
+  // оставлены английскими: тест апстрима ищет их по статическому тексту шаблона,
+  // и перевод ломал бы его на каждом ребейзе ради двух кнопок, которых нет на
+  // первом экране. Аргумент — стоимость слияний, а не «нельзя перевести».
+  "Select archived sessions": "Выбрать сессии из архива",
+  "Close archived session selection": "Отменить выбор сессий",
+  // Подсказки строк списка
+  "Machine actions": "Действия с машиной",
+  "Workspace actions and details": "Действия и сведения о воркспейсе",
+};
+
+/**
+ * Формы существительных для счётного оборота. Английскому хватает правила «+s», русскому
+ * нужны три формы, и выбор между ними — не «последняя цифра»: 11 и 111 идут по «многим»,
+ * 21 и 101 — по «одной».
+ */
+const RU_PLURALS: Record<string, readonly [string, string, string]> = {
+  message: ["сообщение", "сообщения", "сообщений"],
 };
 
 const CATALOGS: Record<Locale, Record<string, string>> = { en: {}, ru: RU };
@@ -97,6 +127,29 @@ export function setLocale(value: Locale | undefined): void {
 
 export function t(text: string): string {
   return CATALOGS[locale()][text] ?? text;
+}
+
+function russianPluralForm(count: number, forms: readonly [string, string, string]): string {
+  const abs = Math.abs(Math.trunc(count));
+  const tail = abs % 100;
+  if (tail >= 11 && tail <= 14) return forms[2];
+  const last = abs % 10;
+  if (last === 1) return forms[0];
+  if (last >= 2 && last <= 4) return forms[1];
+  return forms[2];
+}
+
+/**
+ * Счётный оборот: `tPlural(3, "message")` → «3 сообщения» / "3 messages".
+ *
+ * Ключ — английское существительное в единственном числе, как и у `t()`. Незнакомое слово
+ * склоняется по английскому правилу: показать "3 widgets" в русском интерфейсе честнее,
+ * чем упасть или напечатать ключ.
+ */
+export function tPlural(count: number, noun: string): string {
+  const forms = locale() === "ru" ? RU_PLURALS[noun] : undefined;
+  const word = forms === undefined ? (count === 1 ? noun : `${noun}s`) : russianPluralForm(count, forms);
+  return `${String(count)} ${word}`;
 }
 
 /**

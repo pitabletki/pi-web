@@ -95,7 +95,7 @@ export class ProjectList extends LitElement implements KeyboardNavigableSection 
 
   private renderHeading() {
     if (!this.collapsible) return html`<span>${t("Projects")}</span>`;
-    const selectedSummary = this.selected?.name ?? "No project selected";
+    const selectedSummary = this.selected?.name ?? t("No project selected");
     const selectedTitle = this.selected?.path ?? selectedSummary;
     return html`<button class="section-toggle" aria-expanded=${String(!this.collapsed)} @click=${() => { this.onToggleCollapsed?.(); }}><span class="section-title"><span class="section-name">${this.collapsed ? "▸" : "▾"} ${t("Projects")}</span>${this.collapsed ? html`<small class="section-selected" title=${selectedTitle}>${selectedSummary}</small>` : null}</span><small class="section-count">${this.projects.length}</small></button>`;
   }

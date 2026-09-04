@@ -103,7 +103,7 @@ export class WorkspaceList extends LitElement implements KeyboardNavigableSectio
 
   private renderHeading() {
     if (!this.collapsible) return html`<span>${t("Workspaces")}</span>`;
-    const selectedSummary = this.selected === undefined ? "No workspace selected" : `${this.selected.label}${this.selected.isMain ? " · main" : ""} · ${this.selected.path}`;
+    const selectedSummary = this.selected === undefined ? t("No workspace selected") : `${this.selected.label}${this.selected.isMain ? " · main" : ""} · ${this.selected.path}`;
     const selectedTitle = this.selected?.path ?? selectedSummary;
     return html`<button class="section-toggle" aria-expanded=${String(!this.collapsed)} @click=${() => { this.onToggleCollapsed?.(); }}><span class="section-title"><span class="section-name">${this.collapsed ? "▸" : "▾"} ${t("Workspaces")}</span>${this.collapsed ? html`<small class="section-selected" title=${selectedTitle}>${selectedSummary}</small>` : null}</span><small class="section-count">${this.workspaces.length}</small></button>`;
   }
@@ -137,7 +137,7 @@ export class WorkspaceList extends LitElement implements KeyboardNavigableSectio
       <div class="action-menu">
         <button
           class="action-menu-toggle"
-          title="Workspace actions and details"
+          title=${t("Workspace actions and details")}
           aria-label=${`Actions and details for ${label}`}
           aria-expanded=${String(open)}
           aria-controls=${menuId}

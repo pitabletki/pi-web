@@ -11,7 +11,7 @@ import { renderActionActivityIndicator, type ActivityIndicatorKind } from "./act
 import type { KeyboardNavigableSection } from "./navigationFocus";
 import { activateSelectableRow, focusSelectedOrFirstSelectableRow, handleSelectableRowKeyboard } from "./selectableRow";
 import { listStyles } from "./shared";
-import { t } from "../i18n";
+import { t, tPlural } from "../i18n";
 
 /**
  * An orphan row is a session whose recorded parent is not in this listing.
@@ -165,7 +165,7 @@ export class SessionList extends LitElement implements KeyboardNavigableSection 
         </h2>
       `;
     }
-    const selectedSummary = this.selected === undefined ? "No session selected" : sessionLabel(this.selected);
+    const selectedSummary = this.selected === undefined ? t("No session selected") : sessionLabel(this.selected);
     const selectedTitle = this.selected?.path ?? selectedSummary;
     return html`
       <h2>
@@ -216,8 +216,8 @@ export class SessionList extends LitElement implements KeyboardNavigableSection 
     const active = this.selectionScopes.has("archived");
     return html`
       <h2 class="subheading">
-        <button class="section-toggle" aria-expanded=${String(this.archivedExpanded)} @click=${() => { this.toggleArchived(); }}><span>${this.archivedExpanded ? "▾" : "▸"} Archived</span></button>
-        ${this.archivedExpanded ? html`<button class="bulk-select-entry ${active ? "selected" : ""}" title=${active ? "Close archived session selection" : "Select archived sessions"} aria-label=${active ? "Close archived session selection" : "Select archived sessions"} aria-expanded=${String(active)} aria-pressed=${String(active)} @click=${() => { this.toggleSelection("archived", archivedSessions); }}>☑</button>` : null}
+        <button class="section-toggle" aria-expanded=${String(this.archivedExpanded)} @click=${() => { this.toggleArchived(); }}><span>${this.archivedExpanded ? "▾" : "▸"} ${t("Archived")}</span></button>
+        ${this.archivedExpanded ? html`<button class="bulk-select-entry ${active ? "selected" : ""}" title=${active ? t("Close archived session selection") : t("Select archived sessions")} aria-label=${active ? t("Close archived session selection") : t("Select archived sessions")} aria-expanded=${String(active)} aria-pressed=${String(active)} @click=${() => { this.toggleSelection("archived", archivedSessions); }}>☑</button>` : null}
         <small class="section-count">${archivedSessions.length}</small>
       </h2>
     `;
@@ -293,7 +293,7 @@ export class SessionList extends LitElement implements KeyboardNavigableSection 
       >
         <div class="action-main ${selectionActive ? "selecting" : ""}">
           ${showsCheckbox ? html`<input class="session-checkbox" type="checkbox" aria-label=${`Select ${sessionLabel(session)}`} .checked=${bulkSelected} @click=${(event: MouseEvent) => { event.stopPropagation(); }} @change=${() => { this.toggleSelected(session.id); }}>` : null}
-          <span class="action-name-line"><span class="action-name" dir="auto">${this.renderRowMarker(row)}${sessionLabel(session)}</span>${this.renderRowBadges(row)}</span><small>${this.renderSessionMetaPrefix(session, status, activity)}${String(session.messageCount)} messages</small>
+          <span class="action-name-line"><span class="action-name" dir="auto">${this.renderRowMarker(row)}${sessionLabel(session)}</span>${this.renderRowBadges(row)}</span><small>${this.renderSessionMetaPrefix(session, status, activity)}${tPlural(session.messageCount, "message")}</small>
           ${this.renderActivity(indicatorKind, unread)}
         </div>
         <div class="action-menu">

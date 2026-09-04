@@ -169,35 +169,35 @@ export function shouldShowMachineContext(machines: readonly Machine[]): boolean 
 }
 
 function machineContextLabel(machine: Machine | undefined): string {
-  return machine === undefined ? "No machine" : `${machine.name}${machine.kind === "remote" ? " · remote" : ""}`;
+  return machine === undefined ? t("No machine") : `${machine.name}${machine.kind === "remote" ? " · remote" : ""}`;
 }
 
 function machineContextTitle(machine: Machine | undefined): string {
-  return machine === undefined ? "No machine selected" : machine.baseUrl ?? machine.name;
+  return machine === undefined ? t("No machine selected") : machine.baseUrl ?? machine.name;
 }
 
 function projectContextLabel(project: Project | undefined): string {
-  return project?.name ?? "No project";
+  return project?.name ?? t("No project");
 }
 
 function projectContextTitle(project: Project | undefined): string {
-  return project === undefined ? "No project selected" : `${project.name} — ${project.path}`;
+  return project === undefined ? t("No project selected") : `${project.name} — ${project.path}`;
 }
 
 function workspaceContextLabel(workspace: Workspace | undefined): string {
-  return workspace === undefined ? "No workspace" : `${workspace.label}${workspace.isMain ? " · main" : ""} · ${workspace.path}`;
+  return workspace === undefined ? t("No workspace") : `${workspace.label}${workspace.isMain ? " · main" : ""} · ${workspace.path}`;
 }
 
 function workspaceContextTitle(workspace: Workspace | undefined): string {
-  return workspace === undefined ? "No workspace selected" : `${workspace.label}${workspace.isMain ? " · main" : ""} — ${workspace.path}`;
+  return workspace === undefined ? t("No workspace selected") : `${workspace.label}${workspace.isMain ? " · main" : ""} — ${workspace.path}`;
 }
 
 function sessionContextLabel(session: SessionInfo | undefined): string {
   const name = session?.name?.trim();
   const firstMessage = session?.firstMessage.trim();
-  return name !== undefined && name !== "" ? name : firstMessage !== undefined && firstMessage !== "" ? firstMessage : session === undefined ? "No session" : shortSessionId(session.id);
+  return name !== undefined && name !== "" ? name : firstMessage !== undefined && firstMessage !== "" ? firstMessage : session === undefined ? t("No session") : shortSessionId(session.id);
 }
 
 function sessionContextTitle(session: SessionInfo | undefined): string {
-  return session === undefined ? "No session selected" : session.path;
+  return session === undefined ? t("No session selected") : session.path;
 }
