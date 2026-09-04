@@ -1,6 +1,6 @@
 import { html, svg } from "lit";
 import { requirePluginBackendRevision } from "../../../shared/pluginBackendProtocol";
-import { t } from "../i18n";
+import { localizeAction } from "../i18n";
 import type { PiWebPluginRegistration, PluginAction, PluginRuntimeContext, QualifiedContributionId, QualifiedPluginAction, QualifiedThemeContribution, QualifiedThemePairContribution, QualifiedWorkspaceLabelContribution, QualifiedWorkspacePanelContribution, ThemeContribution, ThemePairContribution, WorkspaceLabelContext, WorkspaceLabelContribution, WorkspaceLabelItem, WorkspacePanelContext, WorkspacePanelContribution, WorkspacePluginBinding } from "./types";
 
 const idPattern = /^[a-z][a-z0-9.-]*$/u;
@@ -97,24 +97,31 @@ export class PluginRegistry {
       const scopedContext = pluginRuntimeContextFor(context, action.pluginId);
       const enabled = action.enabled?.(scopedContext);
       const disabledReason = enabled === false ? action.disabledReason?.(scopedContext) : undefined;
+      // Перевод здесь, а не у каждого объявления действия: действия приходят из ядра,
+      // из встроенных плагинов и из наших — одна точка накрывает все три, и ни один
+      // список действий не приходится трогать. Незнакомая строка проходит как есть,
+      // поэтому плагин со своими русскими подписями остаётся при них. Собственные
+      // действия оболочки проходят через ту же localizeAction в PiWebApp.
+      const localized = localizeAction({
+        title: action.title,
+        ...(action.description === undefined ? {} : { description: action.description }),
+        ...(action.group === undefined ? {} : { group: action.group }),
+        ...(disabledReason === undefined || disabledReason === "" ? {} : { disabledReason }),
+      });
       const qualified: QualifiedPluginAction = {
         id: action.id,
         pluginId: action.pluginId,
         localId: action.localId,
         ...(action.machineId === undefined ? {} : { machineId: action.machineId }),
-        // Перевод здесь, а не у каждого объявления действия: действия приходят из ядра,
-        // из встроенных плагинов и из наших — одна точка накрывает все три, и ни один
-        // список действий не приходится трогать. Незнакомая строка проходит как есть,
-        // поэтому плагин со своими русскими подписями остаётся при них.
-        title: t(action.title),
+        title: localized.title,
         run: () => action.run(scopedContext),
       };
-      if (action.description !== undefined) qualified.description = t(action.description);
+      if (localized.description !== undefined) qualified.description = localized.description;
       if (action.shortcut !== undefined) qualified.shortcut = action.shortcut;
       if (action.shortcutAliases !== undefined) qualified.shortcutAliases = [...action.shortcutAliases];
-      if (action.group !== undefined) qualified.group = t(action.group);
+      if (localized.group !== undefined) qualified.group = localized.group;
       if (enabled !== undefined) qualified.enabled = enabled;
-      if (disabledReason !== undefined && disabledReason !== "") qualified.disabledReason = t(disabledReason);
+      if (localized.disabledReason !== undefined) qualified.disabledReason = localized.disabledReason;
       return qualified;
     });
   }

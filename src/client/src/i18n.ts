@@ -212,6 +212,29 @@ export function t(text: string): string {
   return CATALOGS[locale()][text] ?? text;
 }
 
+/** То, что у действия переводится: подписи, а не поведение. */
+export interface LocalizableAction {
+  title: string;
+  description?: string;
+  group?: string;
+  disabledReason?: string;
+}
+
+/**
+ * Перевести подписи действия, оставив всё остальное как было.
+ *
+ * Одна функция на два места сборки списка действий — реестр плагинов и собственные
+ * действия оболочки. Две копии этого правила разошлись бы: палитра уже показывала
+ * половину списка по-русски, а половину по-английски ровно поэтому.
+ */
+export function localizeAction<T extends LocalizableAction>(action: T): T {
+  const patch: LocalizableAction = { title: t(action.title) };
+  if (action.description !== undefined) patch.description = t(action.description);
+  if (action.group !== undefined) patch.group = t(action.group);
+  if (action.disabledReason !== undefined) patch.disabledReason = t(action.disabledReason);
+  return { ...action, ...patch };
+}
+
 function russianPluralForm(count: number, forms: readonly [string, string, string]): string {
   const abs = Math.abs(Math.trunc(count));
   const tail = abs % 100;

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { LOCALE_STORAGE_KEY, publishLocaleToDocument, resolveLocale, setLocale, t, tPlural } from "./i18n";
+import { LOCALE_STORAGE_KEY, localizeAction, publishLocaleToDocument, resolveLocale, setLocale, t, tPlural } from "./i18n";
 
 afterEach(() => {
   setLocale(undefined);
@@ -107,5 +107,29 @@ describe("the shell frame catalog", () => {
     expect(t("No session selected")).toBe("Сессия не выбрана");
     expect(t("Archived")).toBe("Архив");
     expect(t("Workspace actions and details")).toBe("Действия и сведения о воркспейсе");
+  });
+});
+
+describe("localizeAction", () => {
+  it("переводит подписи действия и не трогает всё остальное", () => {
+    setLocale("ru");
+    const run = () => undefined;
+
+    const localized = localizeAction({ id: "focus.machines", title: "Focus Machines", description: "Move keyboard focus to the machine selector", group: "Navigation", shortcut: "mod+g m", run });
+
+    expect(localized.title).toBe("Перейти к машинам");
+    expect(localized.description).toBe("Перевести фокус на выбор машины");
+    expect(localized.group).toBe("Навигация");
+    expect(localized.shortcut).toBe("mod+g m");
+    expect(localized.run).toBe(run);
+    expect(localized.id).toBe("focus.machines");
+  });
+
+  it("необязательных полей не выдумывает — их не было, их и нет", () => {
+    setLocale("ru");
+    const localized = localizeAction({ title: "Add Project" });
+    expect(localized.title).toBe("Добавить проект");
+    expect("description" in localized).toBe(false);
+    expect("group" in localized).toBe(false);
   });
 });
