@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { t } from "../i18n";
 import type { AppAction } from "../actions";
 import { formatShortcut } from "../keyboardShortcuts";
 import { keyboardEventOriginatesFromNativeActivationControl } from "./keyboardEventTarget";
@@ -20,13 +21,13 @@ export class ActionPalette extends LitElement {
       <modal-surface
         .onClose=${() => this.onCancel?.()}
         .initialFocus=${"input"}
-        .label=${"Action palette"}
+        .label=${t("Action palette")}
         @keydown=${(event: KeyboardEvent) => { this.handleKeyDown(event); }}
       >
         <header>
           <input
             .value=${this.queryText}
-            placeholder="Search actions..."
+            placeholder=${t("Search actions...")}
             @input=${(event: Event) => {
               if (event.target instanceof HTMLInputElement) {
                 this.queryText = event.target.value;
@@ -34,7 +35,7 @@ export class ActionPalette extends LitElement {
               }
             }}
           >
-          <button title="Close" aria-label="Close" @click=${() => this.onCancel?.()}>×</button>
+          <button title=${t("Close")} aria-label=${t("Close")} @click=${() => this.onCancel?.()}>×</button>
         </header>
         <div class="options">
           ${actions.length === 0 ? html`<div class="empty">No actions found.</div>` : actions.map((action, index) => html`

@@ -67,6 +67,89 @@ const RU: Record<string, string> = {
   // Подсказки строк списка
   "Machine actions": "Действия с машиной",
   "Workspace actions and details": "Действия и сведения о воркспейсе",
+  // Палитра действий. Перевод берётся на общем шве (`PluginRegistry.getActions`), поэтому
+  // сюда попадают и действия ядра, и встроенных плагинов, и наших — списки действий при
+  // этом не тронуты. Группы совпадают с ключами секций выше: одно слово — один перевод.
+  "Action palette": "Палитра действий",
+  "Search actions...": "Поиск действий…",
+  "Close": "Закрыть",
+  "General": "Общее",
+  "Preferences": "Настройки",
+  "Navigation": "Навигация",
+  "Info": "Справка",
+  "Updates": "Обновления",
+  "View": "Вид",
+  "Focus Prompt": "Перейти к полю ввода",
+  "Add Machine": "Добавить машину",
+  "Refresh Selected Machine": "Проверить выбранную машину",
+  "Open Selected Machine PI WEB": "Открыть PI WEB выбранной машины",
+  "Remove Selected Machine": "Убрать выбранную машину",
+  "Add Project": "Добавить проект",
+  "Configure Provider Authentication": "Вход у провайдера",
+  "Remove Provider Authentication": "Выход у провайдера",
+  "Select Theme": "Выбрать тему",
+  "Open Settings": "Открыть настройки",
+  "Full Page Reload": "Перезагрузить страницу",
+  "Go to Chat": "Перейти к чату",
+  "Go to Files": "Перейти к файлам",
+  "Go to Terminal": "Перейти к терминалу",
+  "Refresh Files": "Обновить файлы",
+  "Refresh Current Panel": "Обновить текущую панель",
+  "Remove Workspace": "Убрать воркспейс",
+  "Start Session": "Начать сессию",
+  "Select Model": "Выбрать модель",
+  "Select Thinking Level": "Выбрать глубину размышления",
+  "Archive Session": "Убрать сессию в архив",
+  "Reload Session from Disk": "Перечитать сессию с диска",
+  "Delete New Session": "Удалить неначатую сессию",
+  "Stop Active Work": "Остановить работу",
+  "Clean Up Sessions": "Убрать лишние сессии",
+  "Reset Navigation Panel Size": "Вернуть ширину панели навигации",
+  "Reset Workspace Panel Size": "Вернуть ширину панели воркспейса",
+  "Reset Panel Sizes": "Вернуть ширину панелей",
+  "Focus Machines": "Перейти к машинам",
+  "Focus Projects": "Перейти к проектам",
+  "Focus Workspaces": "Перейти к воркспейсам",
+  "Focus Sessions": "Перейти к сессиям",
+  "Check for PI WEB Updates": "Проверить обновления PI WEB",
+  "Copy PI WEB Diagnostics": "Скопировать диагностику PI WEB",
+  // Пояснения под названиями действий
+  "Open the command palette": "Открыть палитру команд",
+  "Move keyboard focus to the message composer": "Перевести фокус в поле сообщения",
+  "Register another PI WEB runtime reachable from this gateway":
+    "Подключить ещё один PI WEB, доступный с этого шлюза",
+  "Check whether the selected PI WEB runtime is online": "Проверить, на связи ли выбранный PI WEB",
+  "Open the selected remote PI WEB directly in a new tab":
+    "Открыть выбранный удалённый PI WEB в новой вкладке",
+  "Remove the selected remote machine from this gateway":
+    "Убрать выбранную удалённую машину с этого шлюза",
+  "Run /login without tying authentication to a session":
+    "Выполнить /login, не привязывая вход к сессии",
+  "Run /logout for stored pi credentials": "Выполнить /logout для сохранённого входа pi",
+  "Choose the PI WEB color theme": "Выбрать цветовую тему PI WEB",
+  "Manage PI WEB configuration and keyboard shortcuts": "Настройки PI WEB и горячие клавиши",
+  "Reload the PI WEB browser page": "Перезагрузить страницу PI WEB",
+  "Run the owning provider's workspace removal operation": "Удалить воркспейс силами его провайдера",
+  "Choose the model for the selected session": "Выбрать модель для выбранной сессии",
+  "Choose the thinking level for the selected session":
+    "Выбрать глубину размышления для выбранной сессии",
+  "Archive the selected session": "Убрать выбранную сессию в архив",
+  "Close and re-open the selected session from its session file. Use /reload in the prompt for Pi runtime resources.":
+    "Закрыть и открыть выбранную сессию заново из её файла. Для ресурсов Pi используй /reload в поле ввода.",
+  "Delete the selected transient new session": "Удалить выбранную неначатую сессию",
+  "Preview and manually clean up idle or archived sessions on the selected machine":
+    "Посмотреть и вручную убрать простаивающие и архивные сессии на выбранной машине",
+  "Restore the navigation panel to its default width": "Вернуть панели навигации обычную ширину",
+  "Restore the workspace panel to its default width": "Вернуть панели воркспейса обычную ширину",
+  "Restore all side panels to their default widths": "Вернуть боковым панелям обычную ширину",
+  "Move keyboard focus to the machine selector": "Перевести фокус на выбор машины",
+  "Move keyboard focus to the projects list": "Перевести фокус в список проектов",
+  "Move keyboard focus to the workspaces list": "Перевести фокус в список воркспейсов",
+  "Move keyboard focus to the sessions list": "Перевести фокус в список сессий",
+  "Bypass cached release data and check the selected machine now":
+    "Проверить выбранную машину сейчас, минуя кеш",
+  "Copy version, installation, and status details for this machine, ready to paste into a bug report":
+    "Скопировать версию, установку и состояние машины — чтобы вставить в баг-репорт",
 };
 
 /**
