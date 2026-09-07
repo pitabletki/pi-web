@@ -1,5 +1,6 @@
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { buffer } from "node:stream/consumers";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { backupArchiveName, backupTarArgs, BACKUP_EXCLUDES, BACKUP_INCLUDES, createBackupArchive } from "./backupArchive.js";
@@ -51,11 +52,9 @@ describe("createBackupArchive", () => {
     await writeFile(join(home, ".pi-web", "projects.json"), '[{"id":"p"}]');
 
     const { stream, completed } = createBackupArchive(home);
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) chunks.push(Buffer.from(chunk as Buffer));
+    const body = await buffer(stream);
     await completed;
 
-    const body = Buffer.concat(chunks);
     expect(body.length).toBeGreaterThan(0);
     expect(body[0]).toBe(0x1f);
     expect(body[1]).toBe(0x8b);
@@ -65,7 +64,7 @@ describe("createBackupArchive", () => {
     const home = await mkdtemp(join(tmpdir(), "pi-backup-empty-"));
 
     const { stream, completed } = createBackupArchive(home);
-    for await (const _chunk of stream) { /* дочитываем, чтобы процесс не остался висеть */ }
+    await buffer(stream); // дочитываем: непрочитанный поток оставил бы tar висеть
 
     await expect(completed).resolves.toBeUndefined();
   });
