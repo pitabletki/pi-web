@@ -1,10 +1,12 @@
 import { existsSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyServerOptions } from "fastify";
 import fastifyCompress from "@fastify/compress";
 import fastifyStatic from "@fastify/static";
 import fastifyWebsocket from "@fastify/websocket";
+import { backupArchiveName, createBackupArchive } from "./backup/backupArchive.js";
 import { ProjectStore } from "./storage/projectStore.js";
 import { ProjectService } from "./projects/projectService.js";
 import type { WorkspaceCatalog } from "./workspaces/workspaceCatalog.js";
@@ -51,6 +53,8 @@ export interface AppDependencies {
   logger?: FastifyServerOptions["logger"];
   /** Maximum accepted HTTP request body size in bytes. */
   bodyLimit?: number;
+  /** Home directory the backup export archives. Defaults to the process home. */
+  backupHome?: string;
 }
 
 interface LocalProjectRouteOptions {
@@ -216,6 +220,18 @@ export async function buildApp(deps: AppDependencies = {}): Promise<FastifyInsta
     return getPiWebVersionStatus(sessionDaemon, activeAgentProfile.status === "available" ? { activeAgentProfile: activeAgentProfile.profile } : {});
   });
   app.get("/api/pi-web/runtime", async () => getPiWebRuntime(sessionDaemon));
+  // Резервная копия отдаётся наружу самим стендом: на Coolify-хосте у нас нет ни рута, ни
+  // SSH, а «выполнить команду в контейнере» Coolify не умеет. Доступ тот же, что ко всему
+  // приложению (на hosted-стендах это basic-auth Traefik), и новых данных наружу это не
+  // открывает: те же сессии видны в интерфейсе.
+  app.get("/api/backup/export", async (_request, reply) => {
+    const { stream, completed } = createBackupArchive(deps.backupHome ?? homedir());
+    completed.catch((error: unknown) => { app.log.error({ err: error }, "backup export failed"); });
+    return reply
+      .type("application/gzip")
+      .header("content-disposition", `attachment; filename="${backupArchiveName(new Date())}"`)
+      .send(stream);
+  });
   app.get("/api/plugins", async (_request, reply) => withProfileDependency(reply, () => piWebPlugins.plugins()));
   app.get("/api/machines/local/plugins", async (_request, reply) => withProfileDependency(reply, () => piWebPlugins.plugins()));
   registerPiPackageRoutes(app, piPackages);
